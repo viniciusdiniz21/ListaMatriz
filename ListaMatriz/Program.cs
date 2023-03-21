@@ -343,7 +343,102 @@ void Exercicio5()
     }
 }
 
-Exercicio5();
+void Exercicio6()
+{
+    string[,] tabuleiro = new string[6,6];
+    List<string> palavras = new List<string>{
+        "Carro",
+        "Moto",
+        "Arvore",
+        "Triceratops",
+        "Bicho-preguiça",
+        "Fusível",
+        "Radiação",
+        "Fogo",
+        "Fruta",
+        "T-rex",
+        "Boing 747",
+        "Neymar",
+        "Cadeia",
+        "Formula1",
+        "Palavra",
+        "Acabou",
+        "Criatividade",
+        "Ultima"
+    };
+
+    Random rand = new Random();
+
+    int paresRestantes = (6 * 6)/2;
+
+    while (paresRestantes > 0)
+    {
+        string palavra = palavras[paresRestantes - 1];
+        int linha1 = rand.Next(6);
+        int coluna1 = rand.Next(6);
+        int linha2 = rand.Next(6);
+        int coluna2 = rand.Next(6);
+
+        if (tabuleiro[linha1, coluna1] == null && tabuleiro[linha2, coluna2] == null && (linha1 != linha2 || coluna1 != coluna2))
+        {
+            tabuleiro[linha1, coluna1] = palavra;
+            tabuleiro[linha2, coluna2] = palavra;
+            paresRestantes--;
+        }
+    }
+
+
+    void ImprimirTabuleiro()
+    {
+        for (int i = 0; i < 6; i++)
+        {
+            for (int j = 0; j < 6; j++)
+            {
+                Console.Write($"| {tabuleiro[i, j]} |");
+            }
+            Console.WriteLine();
+        }
+    }
+
+    void Jogar()
+    {
+        Console.WriteLine("Digite a linha e coluna");
+        Console.WriteLine("Linha palavra 1: ");
+        int linha1 = int.Parse(Console.ReadLine()) - 1;
+        Console.WriteLine("Coluna palavra 1: ");
+        int coluna1 = int.Parse(Console.ReadLine()) - 1;
+        Console.WriteLine(tabuleiro[linha1, coluna1]);
+        Console.WriteLine("Linha palavra 2: ");
+        int linha2 = int.Parse(Console.ReadLine()) - 1;
+        Console.WriteLine("Coluna palavra 2: ");
+        int coluna2 = int.Parse(Console.ReadLine()) - 1;
+        Console.WriteLine(tabuleiro[linha2, coluna2]);
+        verificarAcerto(linha1, coluna1, linha2, coluna2);
+    }
+
+    void verificarAcerto(int lin1, int col1, int lin2, int col2)
+    {
+        if (lin1 > 6 || col1 > 6 || lin2 > 6 || col2 > 6)
+        {
+            Console.WriteLine("Não existe essa célula!");
+            Jogar();
+        }
+        if (tabuleiro[lin1, col1] == tabuleiro[lin2, col2])
+        {
+            Console.WriteLine($"Parabéns, encontrou a palavra {tabuleiro[lin1, col1]}");
+            Console.ReadKey();
+            ImprimirTabuleiro();
+        } else
+        {
+            Console.WriteLine($"Primeira Palavra {tabuleiro[lin1, col1]}");
+            Console.WriteLine($"Segunda Palavra {tabuleiro[lin2, col2]}");
+            Console.ReadKey();
+            Jogar();
+        }
+    }
+
+    Jogar();
+}
 
 
 
