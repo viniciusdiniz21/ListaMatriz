@@ -184,8 +184,15 @@ void Exercicio4()
 
 void Exercicio5()
 {
-    int[,] matriz = new int[3, 3];
+    char[,] tabuleiro = new char[3, 3]
+    {
+        { ' ', ' ', ' ' },
+        { ' ', ' ', ' ' },
+        { ' ', ' ', ' ' }
+    };
     int option = 0;
+    int rodada = 1;
+    bool vezDoX = true;
 
     void Menu()
     {
@@ -198,9 +205,11 @@ void Exercicio5()
     while(option != 3)
     {
         Menu();
+        Console.Clear();
         switch (option)
         {
             case 1:
+                JogarContraHumano();
                 break;
             case 2:
                 break;
@@ -209,7 +218,132 @@ void Exercicio5()
                 break;
         }
     }
+
+    void ImprimirTabuleiro(char[,] tabuleiro)
+    {
+        Console.WriteLine("   1  2  3");
+        for (int i = 0; i < 3; i++)
+        {
+            Console.Write($"{i + 1} ");
+            for (int j = 0; j < 3; j++)
+            {
+                Console.Write($" {tabuleiro[i, j]} ");
+                if (j != 2)
+                {
+                    Console.Write("|");
+                }
+            }
+            Console.WriteLine();
+            if (i != 2)
+            {
+                Console.WriteLine("  -----------");
+            }
+        }
+    }
+
+    void JogarContraHumano()
+    {
+        char vencedor = ' ';
+        
+        while (rodada <= 9)
+        {           
+            if (rodada > 4)
+            {
+                vencedor = VerificarVencedor(tabuleiro);
+                if(vencedor != ' ')
+                {
+                    Console.Clear();
+                    Console.WriteLine($"O Vencedor foi o jogador {vencedor}");
+                    break;
+                }
+            }
+            JogarRodada();
+        }
+        if(vencedor == ' ')
+        {
+            Console.Clear();
+            Console.WriteLine("Deu velha!");
+        } else
+        {
+            Console.Clear();
+            Console.WriteLine($"O Vencedor foi o jogador {vencedor}");
+        }
+        
+    }
+
+    void JogarRodada()
+    {
+        ImprimirTabuleiro(tabuleiro);
+        var jogador = vezDoX ? 'X' : 'O';
+        Console.WriteLine($"Vez do jogador {jogador}");
+        Console.WriteLine("Digite qual a linha que deseja marcar");
+        int linha = int.Parse(Console.ReadLine()) - 1;
+        Console.WriteLine("Digite qual a coluna que deseja marcar");
+        int coluna = int.Parse(Console.ReadLine()) - 1;
+        Console.Clear();
+        VerificarSquare(linha, coluna);
+    }
+
+    void VerificarSquare(int x, int y)
+    {
+        if(x > 3 || y > 3)
+        {
+            Console.WriteLine("Não existe essa célula!");
+            JogarRodada();
+        }
+        if(tabuleiro[x, y] == ' ')
+        {
+            MarcarSquare(x, y);
+        } else
+        {
+            Console.WriteLine("Esta célula já está marcada!");
+            JogarRodada();
+        }
+    }
+
+    void MarcarSquare(int x, int y)
+    {
+        char marcacao =  vezDoX ? marcacao = 'X' : marcacao = 'O';
+        tabuleiro[x, y] = marcacao;
+        vezDoX = !vezDoX;
+        rodada++;
+    }
+
+    char VerificarVencedor(char[,] tabuleiro)
+    {
+        // linhas
+        for (int i = 0; i < 3; i++)
+        {
+            if (tabuleiro[i, 0] != ' ' && tabuleiro[i, 0] == tabuleiro[i, 1] && tabuleiro[i, 1] == tabuleiro[i, 2])
+            {
+                return tabuleiro[i, 0];
+            }
+        }
+
+        // colunas
+        for (int j = 0; j < 3; j++)
+        {
+            if (tabuleiro[0, j] != ' ' && tabuleiro[0, j] == tabuleiro[1, j] && tabuleiro[1, j] == tabuleiro[2, j])
+            {
+                return tabuleiro[0, j];
+            }
+        }
+
+        // diagonais
+        if (tabuleiro[0, 0] != ' ' && tabuleiro[0, 0] == tabuleiro[1, 1] && tabuleiro[1, 1] == tabuleiro[2, 2])
+        {
+            return tabuleiro[0, 0];
+        }
+        if (tabuleiro[0, 2] != ' ' && tabuleiro[0, 2] == tabuleiro[1, 1] && tabuleiro[1, 1] == tabuleiro[2, 0])
+        {
+            return tabuleiro[0, 2];
+        }
+
+        return ' ';
+    }
 }
+
+Exercicio5();
 
 
 
