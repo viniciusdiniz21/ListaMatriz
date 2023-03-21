@@ -197,7 +197,7 @@ void Exercicio5()
     void Menu()
     {
         Console.WriteLine("1 - Iniciar novo jogo Humano vs Humano");
-        Console.WriteLine("1 - Iniciar novo jogo Humano vs Máquina");
+        Console.WriteLine("2 - Iniciar novo jogo Humano vs Máquina");
         Console.WriteLine("3 - Sair");
         option = int.Parse(Console.ReadLine());
     }
@@ -212,6 +212,7 @@ void Exercicio5()
                 JogarContraHumano();
                 break;
             case 2:
+                JogarContraComputador();
                 break;
             default: 
                 Console.WriteLine("Valor Inválido!");
@@ -241,9 +242,22 @@ void Exercicio5()
         }
     }
 
+    void LimparTabuleiro(char[,] tabuleiro)
+    {
+        for (int i = 0; i < 3; i++)
+        {
+            for (int j = 0; j < 3; j++)
+            {
+                tabuleiro[i, j] = ' ';
+            }
+        }
+    }
+
     void JogarContraHumano()
     {
+        LimparTabuleiro(tabuleiro);
         char vencedor = ' ';
+        rodada = 1;
         
         while (rodada <= 9)
         {           
@@ -254,6 +268,7 @@ void Exercicio5()
                 {
                     Console.Clear();
                     Console.WriteLine($"O Vencedor foi o jogador {vencedor}");
+                    ImprimirTabuleiro(tabuleiro);
                     break;
                 }
             }
@@ -271,10 +286,97 @@ void Exercicio5()
         
     }
 
+    void JogarContraComputador()
+    {
+        LimparTabuleiro(tabuleiro);
+        char vencedor = ' ';
+        rodada = 1;
+
+        while (rodada <= 9)
+        {
+            char jogador = vezDoX ? 'X' : 'O';
+
+            vencedor = ' ';
+
+            if (rodada > 4)
+            {
+                vencedor = VerificarVencedor(tabuleiro);
+                if (vencedor != ' ')
+                {
+                    Console.Clear();
+                    Console.WriteLine($"O Vencedor foi o jogador {vencedor}");
+                    ImprimirTabuleiro(tabuleiro);
+                    break;
+                }
+            }
+            if (jogador == 'X')
+            {
+                JogarRodada();
+            }
+            else
+            {
+                JogarRodadaComputador();
+            }
+        }
+        if (vencedor == ' ')
+        {
+            Console.Clear();
+            Console.WriteLine("Deu velha!");
+        }
+        else
+        {
+            Console.Clear();
+            Console.WriteLine($"O Vencedor foi o jogador {vencedor}");
+        }
+    }
+
+    int CalcularPontuacao((int linha, int coluna) posicao)
+    {
+        int pontuacao = 0;
+        char jogador = vezDoX ? 'X' : 'O';
+
+        // Verifica se a posição está vazia
+        if (tabuleiro[posicao.linha, posicao.coluna] == ' ')
+        {
+            if (posicao == (1, 1))
+            {
+                pontuacao += 2;
+            }
+            else if (new List<(int, int)> { (0, 0), (0, 2), (2, 0), (2, 2) }.Contains(posicao))
+            {
+                pontuacao += 1;
+            }
+
+            tabuleiro[posicao.linha, posicao.coluna] = jogador;
+            if (VerificarVencedor(tabuleiro) == jogador)
+            {
+                pontuacao += 4;
+            }
+            tabuleiro[posicao.linha, posicao.coluna] = ' ';
+
+            char adversario = jogador == 'X' ? 'O' : 'X';
+            tabuleiro[posicao.linha, posicao.coluna] = adversario;
+            if (VerificarVencedor(tabuleiro) == adversario)
+            {
+                pontuacao += 4;
+            }
+            tabuleiro[posicao.linha, posicao.coluna] = ' ';
+
+            // Menos 2 pontos se já tiver uma ou mais peças do adversário na mesma linha, coluna ou diagonal da posição
+            if (VerificarPosicaoAmeacada(posicao, adversario))
+            {
+                pontuacao -= 2;
+            }
+        }
+
+        return pontuacao;
+    }
+
     void JogarRodada()
     {
+        char jogador = vezDoX ? 'X' : 'O';
+
         ImprimirTabuleiro(tabuleiro);
-        var jogador = vezDoX ? 'X' : 'O';
         Console.WriteLine($"Vez do jogador {jogador}");
         Console.WriteLine("Digite qual a linha que deseja marcar");
         int linha = int.Parse(Console.ReadLine()) - 1;
@@ -282,6 +384,36 @@ void Exercicio5()
         int coluna = int.Parse(Console.ReadLine()) - 1;
         Console.Clear();
         VerificarSquare(linha, coluna);
+    }
+
+    void JogarRodadaComputador()
+    {
+        int pontuacao = 0;
+        int maiorPontuacao = int.MinValue;
+        int linhaMaiorPontuacao = -1;
+        int colunaMaiorPontuacao = -1;
+        for(int i = 0; i < 3; i++)
+        {
+            for (int j = 0; j < 3; j++)
+            {
+                if (tabuleiro[i,j] == ' ')
+                {
+                    pontuacao = CalcularPontuacao((i, j));
+                    
+                    if( pontuacao > maiorPontuacao)
+                    {
+                        maiorPontuacao = pontuacao;
+                        linhaMaiorPontuacao = i;
+                        colunaMaiorPontuacao = j;
+                    }
+                }
+            }
+        }
+        if(linhaMaiorPontuacao != -1 && colunaMaiorPontuacao != -1)
+        {
+            MarcarSquare(linhaMaiorPontuacao, colunaMaiorPontuacao);
+        }
+        
     }
 
     void VerificarSquare(int x, int y)
@@ -303,7 +435,7 @@ void Exercicio5()
 
     void MarcarSquare(int x, int y)
     {
-        char marcacao =  vezDoX ? marcacao = 'X' : marcacao = 'O';
+        char marcacao =  vezDoX ? 'X' : 'O';
         tabuleiro[x, y] = marcacao;
         vezDoX = !vezDoX;
         rodada++;
@@ -340,6 +472,58 @@ void Exercicio5()
         }
 
         return ' ';
+    }
+
+    bool VerificarPosicaoAmeacada((int linha, int coluna) posicao, char adversario)
+    {
+        for (int i = 0; i < 3; i++)
+        {
+            if (tabuleiro[posicao.linha, i] == adversario)
+            {
+                return true;
+            }
+        }
+
+        for (int i = 0; i < 3; i++)
+        {
+            if (tabuleiro[i, posicao.coluna] == adversario)
+            {
+                return true;
+            }
+        }
+
+        if (posicao.linha == posicao.coluna || posicao.linha + posicao.coluna == 2)
+        {
+            // diagonal 1
+            if (tabuleiro[0, 0] == adversario && tabuleiro[1, 1] == adversario && tabuleiro[2, 2] == '-')
+            {
+                return true;
+            }
+            if (tabuleiro[0, 0] == adversario && tabuleiro[1, 1] == '-' && tabuleiro[2, 2] == adversario)
+            {
+                return true;
+            }
+            if (tabuleiro[0, 0] == '-' && tabuleiro[1, 1] == adversario && tabuleiro[2, 2] == adversario)
+            {
+                return true;
+            }
+
+            // diagnoal 2
+            if (tabuleiro[0, 2] == adversario && tabuleiro[1, 1] == adversario && tabuleiro[2, 0] == '-')
+            {
+                return true;
+            }
+            if (tabuleiro[0, 2] == adversario && tabuleiro[1, 1] == '-' && tabuleiro[2, 0] == adversario)
+            {
+                return true;
+            }
+            if (tabuleiro[0, 2] == '-' && tabuleiro[1, 1] == adversario && tabuleiro[2, 0] == adversario)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
 
@@ -439,6 +623,8 @@ void Exercicio6()
 
     Jogar();
 }
+
+Exercicio5();
 
 
 
