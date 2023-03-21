@@ -182,6 +182,35 @@ void Exercicio4()
     CalcularSomaMatriz();
 }
 
+void Exercicio5()
+{
+    int[,] matriz = new int[3, 3];
+    int option = 0;
+
+    void Menu()
+    {
+        Console.WriteLine("1 - Iniciar novo jogo Humano vs Humano");
+        Console.WriteLine("1 - Iniciar novo jogo Humano vs Máquina");
+        Console.WriteLine("3 - Sair");
+        option = int.Parse(Console.ReadLine());
+    }
+
+    while(option != 3)
+    {
+        Menu();
+        switch (option)
+        {
+            case 1:
+                break;
+            case 2:
+                break;
+            default: 
+                Console.WriteLine("Valor Inválido!");
+                break;
+        }
+    }
+}
+
 
 
 
